@@ -1,0 +1,147 @@
+---
+title: "semester project Lindarose Aramburo"
+author: "Lindarose Aramburo Maldonado"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: true
+2 * 2
+```
+
+The `echo: true` option disables the printing of code (only output is displayed).
+
+This semester I chose to research over Cereal brands and their nutrition facts. I believe this is important because of the rising obesity rates in children and adults. In the United States "41.9 percent of adults have obesity" (tfah.org). In children "17 percent of children ages 10-17 years old had obesity" (state of childhood obesity). These are astounding numbers compared to those in other countries across the globe. Americans in the United states consume cereal products daily. Something as simple as cereal brands and their nutritional information can show the link between a daily food and the the fats consumed. With this data I hope to learn if there is a significant amount of fat in popular cereal brands.
+
+The data set consists of various 80 popular cereal brands and their nutrition facts. The data's unit of observation vary on the value but it ranges from cups, kcal, and grams. the data set was provided by Chris Crawford and put into Kaggle.com. However the original data set was gathered and cleaned up by Petra Isenberg, Pierre Dragicevic, Yvonne Jansen. And they got the data from the 1993 statistical Graphics Exposition.
+
+From this data set I will be mainly looking at the link between calories per serving and grams of sugar. in order to find what most Americans' today are consuming from calories and how it relates to the amount of sugar that they consume.
+
+```{r}
+cereal <- read_csv("Desktop/cereal.csv")
+
+cat("Table 1: Data for cereal project")
+```
+
+**Table 1: Data for Cereal Project**
+
+```{r}
+head(cereal)
+```
+
+This data is a multi-brand project done by Isenberg, Dragicevic and Jansen (information recieved from 1993 Statistical Graphics Exposition), on the nutritional values in various popular and common cereals. This data includes 80 different cereal brands from 7 different manufacturers. The unit of observation is the cereal brand. The chosen variables are sugar amount in grams per serving (sugars) and calories per serving (calories) in each cereal brand. The data is derived from the 1993 Statistical Graphics Exposition (lib.stat.cmu.edu).
+
+The two variables Sugars and Calories are continuous variables. Sugars has a mean of 106.9, median of 110.0, and standard deviation of 19.48412 (see Tables 2 and 4). The data has a bell curve skew (see Figure 1). Sugars has a mean of 7.000, a median of 6.922, and a standard deviation of 4.444885 (See Tables 5 and 7). The distribution is hard to describe, but it has a slight bell curve and flatoes at 5-10 grams of sugar.
+
+**Summary Statistices of the variables**
+
+```{r}
+cat("Table 2: Summary statistics of Calories")
+```
+
+Table 2: Summary statistics of Calories in cereals
+
+```{r}
+summary(cereal$calories)
+```
+
+Table 3: Variance of Calories in cereals
+
+```{r}
+var(cereal$calories)
+```
+
+Table 4: Standard Deviation of Calories in cereals
+
+```{r}
+sd(cereal$calories)
+```
+
+Table 5: Summary Statistics for grams of Sugar in cereals
+
+```{r}
+summary(cereal$sugars)
+```
+
+Table 6: Variance Sugars in cereal
+
+```{r}
+var(cereal$sugars)
+```
+
+Table 7: Standard Deviation of Sugars in cereal
+
+```{r}
+sd(cereal$sugars)
+```
+
+### Histograms of the Variables
+
+```{r}
+hist(cereal$calories, col = "blue", main = "Figure 1: Histogram of Calories in a Serving", xlab = "Calories in a serving")
+```
+
+```{r}
+hist(cereal$sugars, col = "red", main = "Histogram of grams of sugar", xlab = "Grams of sugar")
+```
+
+### The Relationship between the variables
+
+Grams of sugar and Calories per serving has a slightly higher than average relationship. The Covariance of the variables is 48.701. The Pearson's correlation of the two variables is slight higher than normal at 0.562
+
+```{r}
+library(stargazer)
+varcor <- cor(cereal$calories, cereal$sugars)
+
+varcov <- cov(cereal$calories, cereal$sugars)
+
+corcov <- cbind(varcor, varcov)
+
+stargazer(corcov, type = "text", title = "Table 8: Correlation and Covariance of Variables")
+```
+
+### Regression Results
+
+```{r}
+model_object1 <- lm(calories ~ sugars, data = cereal)
+
+library(stargazer)
+stargazer(model_object1, type = "text", title = "Table 9: OLS Regression Results", covariate.labels = "Grams of Sugars", dep.var.labels = "Calories per Serving")
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(data = cereal, aes(x = sugars, y = calories)) + geom_point() + geom_smooth(method = "lm", se = TRUE) + labs(title = "Figure 3: Confidence Interval for Regression Line", subtitle = "95% Confidence Interval for the Slope", caption = "Source: 1993 Statistical Graphics Exposition") + xlab("Sugars") + ylab("Calories")
+```
+
+A simple Uni-variate Ordinary Least Squares regression model shows an average effect of grams of sugar on calorie amount per serving. The coefficient is 2.465, indicating that an increase of one in grams of Sugars yields an increase of 2.465 in Calories (see Table 9). The result is not significant at the 0.01 level. There is linear relationship with average degree of confidence (see Figure 3). The model has an Adjusted R\^2 of 0.307, explaining 30.7% of the dependent variable. The model has an average fit with an F-Statistic significance at the 0.01 level.
+
+#### Conclusion
+
+The results were somewhat surprising, I expected there to be a higher correlation from the amount of calories per serving and sugar content in grams. No controls were used and nothing was done to determine the direction of causation. This brings to light what other nutritional value does have a higher relation between calorie amount per serving and a specific nutritional value. A better model would include additional observations (more cereal brands), and include values on how popular the cereal is and what most american's characterize as an "actual" serving, meaning how much of a serving(s) does an american eat.
+
+#### Footnotes
+
+Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics tables. R package version 5.2.3. https://CRAN.R-project.org/package=stargazer
+
+"Ages 10-17." *State of Childhood Obesity*, 26 Oct. 2023, stateofchildhoodobesity.org/demographic-data/ages-10-17/.
+
+"State of Obesity 2023: Better Policies for a Healthier America." *TFAH*, 22 Nov. 2023, www.tfah.org/report-details/state-of-obesity-2023/#:\~:text=Nationally%2C%2041.9%20percent%20of%20adults,percent%20and%2045.6%20percent%20respectively.
+
+*Statlib\-\--1993 Graphics Exposition*, lib.stat.cmu.edu/datasets/1993.expo/. Accessed 12 Dec. 2023.
